@@ -37,7 +37,7 @@ function Navbar() {
                         <li><a href={`/appointment`}>Randevu</a></li>
                         <li><a href={`/vaccination`}>Aşı</a></li>
                         <li><a href={`/report`}>Rapor</a></li>
-                        <li><a href={`/work-day`}>Çalışma Günü</a></li>
+                   
                     </ul>
                 </div>
             </nav>

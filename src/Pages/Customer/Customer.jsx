@@ -1,6 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import '../../css/customer.css';
+import '../../css/pagesStyle.css';
+import TextField from '@mui/material/TextField';
+import Alert from '@mui/material/Alert';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import EditIcon from '@mui/icons-material/Edit';
+import SendIcon from '@mui/icons-material/Send';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import ListIcon from '@mui/icons-material/List';
+import SearchIcon from '@mui/icons-material/Search';
+import Button from '@mui/material/Button';
 
 function Customer() {
     const [customers, setCustomers] = useState([]);
@@ -12,24 +27,37 @@ function Customer() {
         address: "",
         city: "",
     });
+    const [updateCustomer, setUpdateCustomer] = useState({
+        name: "",
+        phone: "",
+        email: "",
+        address: "",
+        city: "",
+    });
 
-    const [filteredCustomers, setFilteredCustomers] = useState([]);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [showAll, setShowAll] = useState(true);
+   
+    const [searchCustomer, setSearchCustomer] = useState({
+        name: "",
+    });
 
+    const [alert, setAlert] = useState(false);
     useEffect(() => {
-        axios.get("http://localhost:8080/api/v1/customers")
+        axios.get(import.meta.env.VITE_APP_BASEURL + "/api/v1/customers")
             .then((res) => {
                 setCustomers(res.data.content);
                 setUpdate(false);
             })
-            .catch(error => {
-                console.error('There was an error fetching the customers!', error);
+            .catch(() => {
+                setAlert(true);
+                setTimeout(() => {
+                    setAlert(false);
+                }, 3000)
             });
     }, [update]);
 
     const handleNewCustomerInputChange = (e) => {
         const { name, value } = e.target;
+
         setNewCustomer((prev) => ({
             ...prev,
             [name]: value
@@ -37,7 +65,7 @@ function Customer() {
     };
 
     const handleAddNewCustomer = () => {
-        axios.post("http://localhost:8080/api/v1/customers", newCustomer)
+        axios.post(import.meta.env.VITE_APP_BASEURL + "/api/v1/customers", newCustomer)
             .then((res) => {
                 console.log(res);
                 setUpdate(true);
@@ -49,113 +77,204 @@ function Customer() {
                     city: "",
                 });
             })
-            .catch(error => {
-                console.error('There was an error adding the customer!', error);
+            .catch(() => {
+                setAlert(true);
+                setTimeout(() => {
+                    setAlert(false);
+                }, 3000)
             });
     };
 
     const handleDeleteCustomer = (id) => {
-        axios.delete(`http://localhost:8080/api/v1/customers/${id}`)
+        axios.delete(`${import.meta.env.VITE_APP_BASEURL}/api/v1/customers/${id}`)
             .then(() => {
                 setUpdate(true);
             })
-            .catch(error => {
-                console.error('There was an error deleting the customer!', error);
+            .catch(() => {
+                setAlert(true);
+                setTimeout(() => {
+                    setAlert(false);
+                }, 3000)
+            });
+    };
+
+    const handleUpdateCustomerInputChange = (e) => {
+        const { name, value } = e.target;
+        setUpdateCustomer((prev) => ({
+            ...prev,
+            [name]: value
+        }));
+    }
+    const handleUpdateCustomer = () => {
+        const { id } = updateCustomer;
+        axios.put(`${import.meta.env.VITE_APP_BASEURL}/api/v1/customers/${id}`, updateCustomer)
+            .then((res) => {
+                console.log("Customer updated:", res.data);
+                setUpdate(true)
+                setUpdateCustomer({
+                    name: "",
+                    phone: "",
+                    email: "",
+                    address: "",
+                    city: "",
+                });
+            })
+            .catch(() => {
+                setAlert(true);
+                setTimeout(() => {
+                    setAlert(false);
+                }, 3000)
             });
     };
 
     const handleUpdateCustomerBtn = (customer) => {
-        setNewCustomer(customer);
+        setUpdateCustomer(customer);
     };
 
 
-    const handleSearch = () => {
-        const filtered = customers.filter(customer =>
-            customer.name.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        setFilteredCustomers(filtered); // Filtrelenmiş müşterileri güncelle
-        setShowAll(false);
-    };
-
-    const handleInputChange = (e) => {
-        setSearchTerm(e.target.value); // Arama terimini güncelle
-    };
 
 
-    const showAllFunc = ()=> {
-        setShowAll(true);
-        
-    };
+
+    const handleSearchCustomerByName = () => {
+
+    
+
+        axios.get(import.meta.env.VITE_APP_BASEURL + "/api/v1/customers/searchByName?name=" + searchCustomer.name)
+        .then((res) => {
+            setCustomers(res.data.content);
+            // setUpdate(false);
+        })
+        .catch(() => {
+            setAlert(true);
+            setTimeout(() => {
+                setAlert(false);
+            }, 3000)
+        });
+
+    }
+
+
+
+
+
+    const handleSearchCustomerInputChange = (e) => {
+        const { name, value } = e.target;
+        setSearchCustomer((prev) => ({
+            ...prev,
+            [name]: value
+        }));
+        console.log(searchCustomer);
+    }
+
+
+    const showAll = () => {
+        setUpdate(true);
+     
+    }
 
     return (
-        <div>
+        <div className='container'>
+            {alert && <Alert severity="error">Opss...Bir şeyler ters gitti.</Alert>}
+
             {/* CREATE */}
-            <div>
+
+            <div className='area'>
                 <h3>Yeni Müşteri Ekleme</h3>
-                <input
+                <TextField
+                    variant="standard"
                     type='text'
                     name='name'
-                    placeholder='Name'
+                    placeholder='İsim'
                     value={newCustomer.name}
                     onChange={handleNewCustomerInputChange}
                 />
-                <br />
-                <input
+
+                <TextField
+                    variant="standard"
                     type='text'
                     name='phone'
-                    placeholder='Phone'
+                    placeholder='Telefon'
                     value={newCustomer.phone}
                     onChange={handleNewCustomerInputChange}
                 />
-                <br />
-                <input
+                <TextField
+                    variant="standard"
                     type='email'
                     name='email'
                     placeholder='Email'
                     value={newCustomer.email}
                     onChange={handleNewCustomerInputChange}
                 />
-                <br />
-                <input
+                <TextField
+                    variant="standard"
                     type='text'
                     name='address'
-                    placeholder='Address'
+                    placeholder='Adres'
                     value={newCustomer.address}
                     onChange={handleNewCustomerInputChange}
                 />
-                <br />
-                <input
+                <TextField
+                    variant="standard"
                     type='text'
                     name='city'
-                    placeholder='City'
+                    placeholder='Şehir'
                     value={newCustomer.city}
                     onChange={handleNewCustomerInputChange}
                 />
-                <br />
-                <button onClick={handleAddNewCustomer}>Ekle</button>
+
+                <Button variant="contained" endIcon={<SendIcon />} onClick={handleAddNewCustomer}>Ekle</Button>
+            </div>
+
+            {/* UPDATE */}
+            <div className='area'>
+                <h3>Müşteri Güncelle</h3>
+                <TextField
+                    variant="standard"
+                    type='text'
+                    name='name'
+                    placeholder='İsim'
+                    value={updateCustomer.name}
+                    onChange={handleUpdateCustomerInputChange}
+                />
+                <TextField
+                    variant="standard"
+                    type='text'
+                    name='phone'
+                    placeholder='Telefon'
+                    value={updateCustomer.phone}
+                    onChange={handleUpdateCustomerInputChange}
+                />
+                <TextField
+                    variant="standard"
+                    type='email'
+                    name='email'
+                    placeholder='Email'
+                    value={updateCustomer.email}
+                    onChange={handleUpdateCustomerInputChange}
+                />
+                <TextField
+                    variant="standard"
+                    type='text'
+                    name='address'
+                    placeholder='Adres'
+                    value={updateCustomer.address}
+                    onChange={handleUpdateCustomerInputChange}
+                />
+                <TextField
+                    variant="standard"
+                    type='text'
+                    name='city'
+                    placeholder='Şehir'
+                    value={updateCustomer.city}
+                    onChange={handleUpdateCustomerInputChange}
+                />
+
+                <Button variant="contained" endIcon={<EditIcon />} onClick={handleUpdateCustomer}>Güncelle</Button>
             </div>
 
 
- {/* Arama kutusu */}
- <input
-                type="text"
-                placeholder="Müşteri ara..."
-                value={searchTerm}
-                onChange={handleInputChange}
-            />
-            <button onClick={handleSearch}>Ara</button>
-            <button onClick={showAllFunc} >Tümünü Listele</button>
 
-            {/* Filtrelenmiş müşteri listesi */}
-            <ul>
-                {!showAll&& filteredCustomers.map((customer) => (
-                    <li key={customer.id}>
-                        {customer.name} - {customer.phone} - {customer.email}
-                    </li>
-                ))}
-            </ul>
-
-            {/* List */}
+            {/* List
             <ul className='customer-list'>
                 {showAll && customers && customers.map((customer) => (
                     <li className='list-item' key={customer.id}>
@@ -168,7 +287,67 @@ function Customer() {
                         </span>
                     </li>
                 ))}
-            </ul>
+            </ul> */}
+
+            <div className='area'>
+
+                <h3>Müşteri Listesi</h3>
+
+                {/* Arama kutusu */}
+                <TextField
+                        variant="standard"
+                        type="text"
+                        name="name"
+                        placeholder="Müşteri ismi"
+                        value={searchCustomer.name}
+                        onChange={handleSearchCustomerInputChange}
+                    />
+                    <Button variant="contained" endIcon={<SendIcon />} onClick={handleSearchCustomerByName}>Ara</Button>
+                    
+                <Button variant="contained" endIcon={<ListIcon />} onClick={showAll} >Tümünü Listele</Button>
+                <div className='content'>
+
+                    <TableContainer component={Paper}>
+                        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Ad Soyad</TableCell>
+                                    <TableCell align="right">Telefon</TableCell>
+                                    <TableCell align="right">E-mail</TableCell>
+                                    <TableCell align="right">Adres</TableCell>
+                                    <TableCell align="right">Şehir</TableCell>
+                                    <TableCell align="right">İşlemler</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {customers?.map((row) => (
+                                    <TableRow
+                                        key={row.name}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                    >
+                                        <TableCell component="th" scope="row">
+                                            {row.name}
+                                        </TableCell>
+                                        <TableCell align="right">{row.phone}</TableCell>
+                                        <TableCell align="right">{row.email}</TableCell>
+                                        <TableCell align="right">{row.address}</TableCell>
+                                        <TableCell align="right">{row.city}</TableCell>
+                                        <TableCell align="right">
+
+                                            <span onClick={() => handleUpdateCustomerBtn(row)} style={{ cursor: 'pointer', color: 'blue', marginLeft: '10px' }}>
+                                                <EditIcon />
+                                            </span>
+                                            <span onClick={() => handleDeleteCustomer(row.id)} style={{ cursor: 'pointer', color: 'red', marginLeft: '10px' }}>
+                                                <DeleteForeverIcon />
+                                            </span>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </div>
+            </div>
         </div>
     );
 }

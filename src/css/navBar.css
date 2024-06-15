@@ -28,7 +28,7 @@ nav {
 .icon{
     display: inline;
     flex-direction: row;
-    color:#185e23
+    color:#185e23;
     
     /* height: 15px;
     width: 15px; */
@@ -36,21 +36,21 @@ nav {
     align-items: center;
 }
 
-ul {
+nav ul {
     display: flex;
     flex-direction: row;
     gap: 1em;
     justify-content: space-between;
 }
 
-li{
+nav ul li{
 
     list-style-type: none;
     display: inline;
     
 }
 
-li a {
+nav ul li a {
     background-color: transparent;
     color: #185e23;
     border: none;
@@ -63,7 +63,7 @@ li a {
    
 }
 
-li a:hover {
+nav ul li a:hover {
     color: #29a03b;
     background-color: #99ecae;
     
