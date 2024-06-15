@@ -21,8 +21,13 @@ nav {
 
 .web-name {
     display: inline;
-    
-    color:#185e23
+    text-decoration: none;
+    color:#185e23;
+    font-size: 1.5em;
+}
+
+.web-name:hover {
+    color: #29a03b;
 }
 
 .icon{

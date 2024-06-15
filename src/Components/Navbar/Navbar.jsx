@@ -25,8 +25,8 @@ function Navbar() {
                     <div className="icon">
                         <PetsIcon />
                     </div>
-
-                    <h3 className="web-name"  >Patile</h3>
+                   
+                    <a  href={`/`} className="web-name"  >Patile</a>
                 </div>
 
                 <div>
