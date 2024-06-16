@@ -9,6 +9,7 @@ import Doctor from './Pages/Doctor/Doctor'
 import Vaccination from './Pages/Vaccination/vaccination'
 import Report from './Pages/Report/Report'
 import {  Routes, Route } from 'react-router-dom'
+import Navi from './Components/Navbar/navi'
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
      
 
       <div>
+      <Navi/>
          <NavBar />
           <Routes>
             <Route path='/' element={<Welcome />} />
