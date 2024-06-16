@@ -21,7 +21,7 @@ function App() {
 
       <div>
       <Navi/>
-         <NavBar />
+         {/* <NavBar /> */}
           <Routes>
             <Route path='/' element={<Welcome />} />
             <Route path='customer' element={<Customer />} />
